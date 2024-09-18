@@ -52,7 +52,7 @@ GUIMainWindow* GUIMainWindow::myInstance = nullptr;
 // member method definitions
 // ===========================================================================
 GUIMainWindow::GUIMainWindow(FXApp* app) :
-    FXMainWindow(app, "sumo-gui main window", nullptr, nullptr, DECOR_ALL, 20, 20, 600, 400),
+    FXMainWindow(app, "sumo-gui main window", nullptr, nullptr, DECOR_NONE, 20, 20, 600, 400),
     myAmFullScreen(false),
     myTrackerLock(true),
     myGLVisual(new FXGLVisual(app, VISUAL_DOUBLEBUFFER)),
@@ -60,6 +60,14 @@ GUIMainWindow::GUIMainWindow(FXApp* app) :
     myListInternal(false),
     myListParking(true),
     myListTeleporting(false) {
+
+    if (doesParentEmbededMode()) {
+        printf("parent mode AAA OK");
+        myAmFullScreen = true;
+    }
+    else {
+        printf("parent mode AAA NONE");
+    }
     // build static tooltips
     myStaticTooltipMenu = new MFXStaticToolTip(app);
     myStaticTooltipView = new MFXStaticToolTip(app);
@@ -470,3 +478,8 @@ GUIMainWindow::onUpdChangeLanguage(FXObject* obj, FXSelector, void*) {
 
 
 /****************************************************************************/
+
+bool GUIMainWindow::doesParentEmbededMode() {
+    int parent = OptionsCont::getOptions().getInt("parent");
+    return parent != 0;
+}

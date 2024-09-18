@@ -586,6 +586,8 @@ protected:
     GUIDialog_Breakpoints* myBreakpointDialog = nullptr;
 
 private:
+    void setupWithEmbededMode();
+    void setupWithHWNDEmbededMode();
     /// @brief starts to load a simulation
     void loadConfigOrNet(const std::string& file);
 

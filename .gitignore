@@ -11,6 +11,7 @@
 /wheelhouse
 /setup.py
 # IDE project files
+cmake_build
 /.settings
 /.cproject
 /.project

@@ -787,6 +787,12 @@ MSFrame::fillOptions() {
     // gui testing - settings output
     oc.doRegister("gui-testing.setting-output", new Option_FileName());
     oc.addDescription("gui-testing.setting-output", "GUI Only", TL("Save gui settings in the given settings output file"));
+
+    // gui testing - settings output
+    oc.doRegister("parent", new Option_Integer(0));
+    oc.addDescription("parent", "GUI Only", TL("set window parent id"));
+
+
 }
 
 

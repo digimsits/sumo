@@ -330,12 +330,15 @@ GUIApplicationWindow::dependentBuild(const bool isLibsumo) {
     myRunThread->start();
     setIcon(GUIIconSubSys::getIcon(GUIIcon::SUMO));
     setMiniIcon(GUIIconSubSys::getIcon(GUIIcon::SUMO_MINI));
+    
+    setupWithEmbededMode();
 }
 
 
 void
 GUIApplicationWindow::create() {
     setWindowSizeAndPos();
+   
     gCurrentFolder = getApp()->reg().readStringEntry("SETTINGS", "basedir", "");
     FXMainWindow::create();
     myMenuBarDrag->create();
@@ -383,6 +386,7 @@ GUIApplicationWindow::create() {
         myOnlineMaps["OSM"] = "https://www.openstreetmap.org/?mlat=%lat&mlon=%lon&zoom=18&layers=M";
     }
     updateTimeLCDTooltip();
+    setupWithHWNDEmbededMode();
 }
 
 
@@ -1920,9 +1924,14 @@ GUIApplicationWindow::handleEvent_SimulationLoaded(GUIEvent* e) {
                 }
                 onCmdGaming(nullptr, 0, nullptr);
             } else {
+               
                 // set simulation name on the caption
                 setTitle(MFXUtils::getTitleText("SUMO " VERSION_STRING, ec->myFile.c_str()));
+                
             }
+            
+            setupWithEmbededMode();
+
             if (ec->myViewportFromRegistry) {
                 Position off;
                 off.set(getApp()->reg().readRealEntry("viewport", "x"),
@@ -2138,6 +2147,74 @@ GUIApplicationWindow::loadConfigOrNet(const std::string& file) {
         setStatusBarText(TLF("Loading '%'.", file));
         update();
     }
+}
+
+void GUIApplicationWindow::setupWithHWNDEmbededMode() {
+
+    int parent = OptionsCont::getOptions().getInt("parent");
+    if (parent == 0) return;
+
+#ifdef _WINDOWS
+    HWND hwnd = (HWND)this->id();
+    HWND hParent = (HWND)parent;
+    RECT rect = { 0 };
+    ::GetWindowRect(hParent, &rect);
+    int l = rect.left;
+    int t = rect.top;
+    int w = rect.right - rect.left;
+    int h = rect.bottom - rect.top;
+    move(l, t);
+    resize(w, h);
+    ::SetParent(hwnd, hParent);
+   
+   
+    char buffer[256];
+    sprintf(buffer, "parent window: %d- childen: %d: [l:%d t:%d w:%d h:%d]", parent, hwnd, rect.left, rect.top, w,h);
+    OutputDebugStringA(buffer);
+
+    OutputDebugStringA("It is window");
+#endif // _WINDOWS
+}
+
+void GUIApplicationWindow::setupWithEmbededMode() {
+    int parent = OptionsCont::getOptions().getInt("parent");
+    if (parent == 0) return;
+
+ 
+   
+
+
+    setTitle("SUMO_EMBEDDED");
+    myMenuBar->hide();
+    myStatusbar->hide();
+    myToolBar1->hide();
+    myToolBar2->hide();
+    myToolBar4->hide();
+    myToolBar5->hide();
+    myToolBar6->show();
+    myToolBar8->hide();
+    myToolBar10->show();
+    myToolBar7->hide();
+    myToolBar9->hide();
+    myMessageWindow->hide();
+    myLCDLabel->setFgColor(MFXUtils::getFXColor(RGBColor::RED));
+    myWaitingTimeLabel->setFgColor(MFXUtils::getFXColor(RGBColor::RED));
+    myTimeLossLabel->setFgColor(MFXUtils::getFXColor(RGBColor::RED));
+    myEmergencyVehicleLabel->setFgColor(MFXUtils::getFXColor(RGBColor::RED));
+    myTotalDistanceLabel->setFgColor(MFXUtils::getFXColor(RGBColor::RED));
+
+#ifdef _WINDOWS
+    HWND hwnd = (HWND)this->id();
+    ::SetParent(hwnd, (HWND)parent);
+
+    char buffer[256];
+    sprintf(buffer, "parent window: %d- childen: %d", parent, hwnd);
+    OutputDebugStringA(buffer);
+   
+    OutputDebugStringA("It is window");
+#endif // _WINDOWS
+
+
 }
 
 

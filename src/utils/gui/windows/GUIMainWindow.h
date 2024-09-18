@@ -269,4 +269,6 @@ protected:
 
     void buildLanguageMenu(FXMenuBar* menuBar);
 
+    bool doesParentEmbededMode();
+
 };
